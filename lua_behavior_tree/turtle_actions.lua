@@ -183,7 +183,30 @@ function craft_wooden_pickaxe()
 	-- craft
 	turtle.craft()
 end
-craft_wooden_pickaxe()
+
+function find_stone()
+	haveStone = false
+	while not haveStone do
+		for i=0,4 do
+			turtle.digDown()
+			turtle.down()
+		end
+		for i=1,16 do
+			turtle.select(i)
+			item = turtle.getItemDetail()
+			if item ~= nil then
+				if item.name == "minecraft:cobblestone" then
+					stoneIndex = i
+					break
+				end
+			end
+		end
+
+		if turtle.getItemCount() >= 11 then
+			haveStone = true
+		end
+	end
+end
 
 function craft_tool(tool)
 
