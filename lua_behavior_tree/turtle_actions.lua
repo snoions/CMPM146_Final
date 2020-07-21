@@ -90,6 +90,100 @@ function look_for_tree()
 	end
 end
 
+-- craft wood pick
+-- check if there is a block under you, if not place one
+-- get rid of the block in front of you so that you can drop and suck without interference
+-- move forward and turn twice
+function craft_wooden_pickaxe()	
+
+	-- drop then put the wood in the first slot
+
+	-- check if there is a block under you, if not place one
+	if not turtle.detectDown() then
+		turtle.placeDown()
+	end
+	turtle.dig()
+	-- turn twice place a block then move back
+	-- this creates an environment where you can use drop() and suck() consistently (the items don't get lost somehow)
+	turtle.turnLeft()
+	turtle.turnLeft()
+	turtle.dig()
+
+
+	-- get rid of extra blocks so that there is no inventory overflow
+	turtle.forward()
+	-- get rid of unecessary stuff in inventory #TODO
+	for i=1,16 do
+		turtle.select(i)
+		item = turtle.getItemDetail()
+		if item ~= nil then
+			if item.name == "minecraft:log" or item.name == "minecraft:log2" then
+				woodIndex = i
+				break
+			end
+		end
+	end
+	-- empty out random stuff in inventory
+	turtle.turnLeft()
+	for i=1,16 do
+		turtle.select(i)
+		if i ~= woodIndex then
+			turtle.drop()
+		end
+	end
+	turtle.select(woodIndex)
+	amt = turtle.getItemCount()
+		if amt > 16 then
+			turtle.drop(amt-16)
+		end
+	turtle.turnRight()
+	turtle.back()
+	-- create a barricade to ensure suck consistancy
+	turtle.place()
+	turtle.turnLeft()
+	turtle.place()
+	turtle.turnLeft()
+	turtle.turnLeft()
+	turtle.place()
+	turtle.turnLeft()
+	turtle.back()
+
+	-- get wood in first slot
+	turtle.select(woodIndex)
+	turtle.drop()
+	turtle.select(1)
+	turtle.suck()
+
+	-- craft stuff
+	-- turtle.back()
+	turtle.craft(16)
+
+	-- reposition wood into diff slot so we can craft sticks
+	turtle.drop(1)
+	turtle.select(5)
+	turtle.suck()
+	turtle.craft(1)
+
+	-- we have sticks now we need to move stuff around and craft a pickaxe
+	-- move sticks
+	turtle.drop()
+	turtle.select(6)
+	turtle.suck()
+	turtle.drop(1)
+	turtle.select(10)
+	turtle.suck()
+	-- move wood
+	turtle.select(1)
+	turtle.drop(2)
+	turtle.select(2)
+	turtle.suck()
+	turtle.drop(1)
+	turtle.select(3)
+	turtle.suck()
+	-- craft
+	turtle.craft()
+end
+craft_wooden_pickaxe()
 
 function craft_tool(tool)
 
