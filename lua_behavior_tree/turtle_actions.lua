@@ -273,15 +273,18 @@ end
 
 --precondition: turtle has an iron ore, a coal, and a furnace in its inventory
 function smelt_iron()
-	ore_location = find_in_inventory("minecraf:iron_ore")
+	ore_location = find_in_inventory("minecraft:iron_ore")
 	if ore_location == 0 then return false end 
-	coal_location = find_in_inventory("minecraf:coal")
+	coal_location = find_in_inventory("minecraft:coal")
 	if coal_location == 0 then return false end
-	furnace_location = find_in_inventory("minecraf:furnce")
+	furnace_location = find_in_inventory("minecraft:furnace")
 	if furnace_location == 0 then return false end
 
+	--clear space for furnace
+	if turtle.detect() then turtle.dig() end
 	--assume we are facing a furnace
-
+	turtle.select(furnace_location)
+	turtle.place()
 	--drop coal
 	turtle.select(coal_location)
 	turtle.drop()
@@ -291,8 +294,20 @@ function smelt_iron()
 	--drop iron ore
 	turtle.select(ore_location)
 	turtle.dropDown()
+	sleep(10)
+	--collect iron_ingot
+	turtle.digDown()
+	turtle.suckDown()
+	turtle.down()
 	return true
 
+end
+
+
+function sleep(n)  -- seconds
+  local clock = os.clock
+  local t0 = clock()
+  while clock() - t0 <= n do end
 end
 
 function look_for_diamonds()
