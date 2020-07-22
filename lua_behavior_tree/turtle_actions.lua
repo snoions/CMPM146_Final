@@ -1,7 +1,7 @@
 require "bt_nodes"
 
-
 tools = {'wooden pickaxe', 'stone pickaxe', 'iron pickaxe', 'bench', 'furnace'}
+way_points = {}
 --a function that returns the location of an item in the turtle's find_in_inventory
 --returns 0 if not found
 function find_in_inventory(item)
@@ -10,7 +10,6 @@ function find_in_inventory(item)
 		found = turtle.getItemDetail()
 		if found and found.name == item then
 			return i
-		end
 	end
 	return 0
 end
@@ -91,7 +90,7 @@ function find_wood(n)
 	end
 end
 
--- this function should always be called before crafting something
+-- this function should ALWAYS be called before crafting something
 -- this is necessary because the bot has to clear unecessary items and sort them around to match the specific pattern
 -- sets up a crafting space and prepares you to dump things not needed in your inventory
 function setup_craft_area()
@@ -111,9 +110,24 @@ function setup_craft_area()
 	turtle.turnLeft()
 	turtle.dig()
 	turtle.forward()
-	turtle.dig()
-	-- dump items here then when you are done dumping, do turtle.back() and turtle.turnLeft() to start inventory sorting and crafting!
+	turtle.placeDown()
+	turtle.place()
+	turtle.turnRight()
+	turtle.place()
+	turtle.turnLeft()
+	turtle.back()
+	turtle.placeDown()
+	-- dump items here then when you are done dumping, turtle.turnLeft() to start crafting
 end
+
+-- call this function after you finish crafting to pickup all your extra items you dropped
+function pickup_leftover()
+	turtle.turnRight()
+	for i=1,16 do
+		turtle.suck()
+	end
+end
+
 
 -- empties everything in your inventory except the specified indexes in n
 -- n is a list of indicies
@@ -134,6 +148,7 @@ end
 
 -- n = a string of what you want
 -- returns the index of the item
+-- it also selects the slot that your item is in
 -- if not in inventory return nil
 function find_index(n)
 	index = nil
@@ -151,22 +166,9 @@ function find_index(n)
 end
 
 -- craft planks - requires logs
+-- you MUST call setup_craft_area() before crafting
 function craft_planks()
-	-- find where your logs are stored
-end
--- crafts sticks - requires planks
-function craft_sticks()
-
-end
-
--- craft wood pick - requires 2 logs
--- check if there is a block under you, if not place one
--- get rid of the block in front of you so that you can drop and suck without interference
--- move forward and turn twice
--- you MUST call setup_craft_area() before calling this
-function craft_wooden_pick()	
-	woodIndex = nil
-	-- find what slot your wood is in
+	-- find what slot your log is in
 	woodIndex = find_index("minecraft:log")
 	if woodIndex == nil then
 		woodIndex = find_index("minecraft:log2")
@@ -175,57 +177,100 @@ function craft_wooden_pick()
 		print("ERROR: You have no logs!")
 		return
 	end
-
-	-- empty out random stuff in inventory that isn't needed to craft
 	list = {woodIndex}
+	-- get rid of unecessary items
 	empty_inv(list)
 
-	-- get rid of extra blocks so that there is no inventory overflow
-	turtle.select(woodIndex)
-	amt = turtle.getItemCount()
-		if amt > 16 then
-			turtle.drop(amt-16)
-		end
-
 	-- go back to crafting area
-	turtle.back()
 	turtle.turnLeft()
 
-	-- get wood in first slot
+	-- craft planks
+	turtle.craft()
+end
+
+-- crafts sticks - requires planks
+-- you MUST call setup_craft_area() before crafting
+function craft_sticks()
+	woodIndex = find_index("minecraft:planks")
+	if woodIndex == nil then
+		print("ERROR: You have no planks!")
+		return
+	end
+	list = {woodIndex}
+	-- get rid of unecessary items
+	empty_inv(list)
+
+	-- go back to crafting area
+	turtle.turnLeft()
+
+	-- put planks in first slot
 	turtle.select(woodIndex)
-	turtle.drop()
-	turtle.select(1)
-	turtle.suck()
+	turtle.transferTo(1)
 
-	-- craft wood
-	-- turtle.back()
-	turtle.craft(16)
-
-	-- reposition wood into diff slot to
+	-- reposition wood into slot under to match recipe
 	-- craft sticks
-	turtle.drop(1)
-	turtle.select(5)
-	turtle.suck()
+	turtle.transferTo(5, 1)
 	turtle.craft(1)
+end
 
-	-- we have sticks now we need to move stuff around and craft a pickaxe
-	-- move sticks
-	turtle.drop()
-	turtle.select(6)
-	turtle.suck()
-	turtle.drop(1)
-	turtle.select(10)
-	turtle.suck()
-	-- move wood
-	turtle.select(1)
-	turtle.drop(2)
-	turtle.select(2)
-	turtle.suck()
-	turtle.drop(1)
-	turtle.select(3)
-	turtle.suck()
+-- craft wood pick - requires planks and sticks
+-- you MUST call setup_craft_area() before crafting
+function craft_wood_pick()
+	woodIndex = nil
+	stickIndex = nil
+	-- find what slot your items are in
+	woodIndex = find_index("minecraft:planks")
+	if woodIndex == nil then
+		print("ERROR: You have no planks")
+	end
+	-- check to make sure you have enough
+	plankCount = turtle.getItemCount(woodIndex)
+	if plankCount < 3 then
+		print("ERROR: You don't have enough planks")
+		return
+	end
+
+	stickIndex = find_index("minecraft:stick")
+	if stickIndex == nil then
+		print("ERROR: You have no sticks")
+	end
+	-- check to make sure you have enough
+	stickCount = turtle.getItemCount(stickIndex)
+	if stickCount < 2 then
+		print("ERROR: You don't have enough sticks")
+		return
+	end
+
+	-- empty out random stuff in inventory that isn't needed to craft
+	list = {woodIndex, stickIndex}
+	empty_inv(list)
+
+	-- go back to crafting area
+	turtle.turnLeft()
+
+	-- at this point you FOR SURE only have two items in your inventory
+	-- move sticks to open spot
+	turtle.select(stickIndex)
+	if turtle.transferTo(16) then
+		stickIndex = 16
+	else 
+		turtle.transferTo(15)
+		stickIndex = 15
+	end
+
+	-- put planks in slot 1, 2, 3
+	turtle.select(woodIndex)
+	turtle.transferTo(1)
+	turtle.transferTo(2, 1)
+	turtle.transferTo(3, 1)
+
+	-- move sticks to slot 5 then transfer 1 stick to slot 9
+	turtle.select(stickIndex)
+	turtle.transferTo(5)
+	turtle.transferTo(9, 1)
 	-- craft
 	turtle.craft()
+
 end
 
 -- digs down and every 5 blocks pauses to check if we have enough stone to craft
@@ -271,7 +316,7 @@ function mine_iron()
 
 end
 
---precondition: turtle has an iron ore, a coal, and a furnace in its inventory
+--a temporary implementation , could have been done better with GOAP or HTN
 function smelt_iron()
 	ore_location = find_in_inventory("minecraft:iron_ore")
 	if ore_location == 0 then return false end 
@@ -313,39 +358,3 @@ end
 function look_for_diamonds()
 
 end
-
-function dig_to_bedrock()
-    success, blockUnder = turtle.inspectDown()
-    while not success or blockUnder.name ~= "minecraf:bedrock" do
-        if success then
-            turtle.digDown()
-        end
-        turtle.down()
-        success, blockUnder = turtle.inspectDown()
-    end
-    return true
-end
- 
-function go_to_level(current, goal)
-    if current == goal then return true end
-    while current~=goal do
-        if current > goal then
-            if turtle.detectDown() then
-                turtle.digDown()
-            end
-            current = current -1
-            print(current)
-            turtle.down()
-        else
-            if turtle.detectUp() then
-                turtle.digUp()
-            end
-            current = current +1
-            turtle.up()
-        end
-        print(current)
-    end
- return true
-end
- 
- 
