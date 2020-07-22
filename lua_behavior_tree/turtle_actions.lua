@@ -15,11 +15,11 @@ function find_in_inventory(item)
 end
 
 -- goes in a spiral pattern looking for a tree, when found it farms it then stops at the bottom
--- change 'width' to change the width of the search spiral
-function look_for_tree()
+-- n = width of the search spiral
+function find_wood(n)
 	-- end result is a width+1 x width+2 rectangle
 	length = 0
-	width = 5
+	width = n
 	downCount = 0
 	treeDone = false
 	for j=0,width do
@@ -90,7 +90,8 @@ function look_for_tree()
 	end
 end
 
--- this funciton should always be called before crafting something
+-- this function should always be called before crafting something
+-- this is necessary because the bot has to clear unecessary items and sort them around to match the specific pattern
 -- sets up a crafting space and prepares you to dump things not needed in your inventory
 function setup_craft_area()
 	-- check if there is a block under you, if not place one
@@ -113,30 +114,70 @@ function setup_craft_area()
 	-- dump items here then when you are done dumping, do turtle.back() and turtle.turnLeft() to start inventory sorting and crafting!
 end
 
--- craft wood pick
--- check if there is a block under you, if not place one
--- get rid of the block in front of you so that you can drop and suck without interference
--- move forward and turn twice
-function craft_wooden_pickaxe()	
+-- empties everything in your inventory except the specified indexes in n
+-- n is a list of indicies
+function empty_inv(n)
+	-- empty out random stuff in inventory that isn't needed to craft
+	for i=1,16 do
+		turtle.select(i)
+		-- gets the size of n
+		nSize = table.getn(n)
+		-- iter thru n and drop anything that isn't in n
+		for j=1,nSize do
+			if i ~= n[j] then
+				turtle.drop()
+			end
+		end
+	end
+end
 
-	-- find what slot your wood is in
+-- n = a string of what you want
+-- returns the index of the item
+-- if not in inventory return nil
+function find_index(n)
+	index = nil
 	for i=1,16 do
 		turtle.select(i)
 		item = turtle.getItemDetail()
 		if item ~= nil then
-			if item.name == "minecraft:log" or item.name == "minecraft:log2" then
-				woodIndex = i
+			if item.name == n then
+				index = i
 				break
 			end
 		end
 	end
-	-- empty out random stuff in inventory that isn't needed to craft
-	for i=1,16 do
-		turtle.select(i)
-		if i ~= woodIndex then
-			turtle.drop()
-		end
+	return index
+end
+
+-- craft planks - requires logs
+function craft_planks()
+	-- find where your logs are stored
+end
+-- crafts sticks - requires planks
+function craft_sticks()
+
+end
+
+-- craft wood pick - requires 2 logs
+-- check if there is a block under you, if not place one
+-- get rid of the block in front of you so that you can drop and suck without interference
+-- move forward and turn twice
+-- you MUST call setup_craft_area() before calling this
+function craft_wooden_pick()	
+	woodIndex = nil
+	-- find what slot your wood is in
+	woodIndex = find_index("minecraft:log")
+	if woodIndex == nil then
+		woodIndex = find_index("minecraft:log2")
 	end
+	if woodIndex == nil then
+		print("ERROR: You have no logs!")
+		return
+	end
+
+	-- empty out random stuff in inventory that isn't needed to craft
+	list = {woodIndex}
+	empty_inv(list)
 
 	-- get rid of extra blocks so that there is no inventory overflow
 	turtle.select(woodIndex)
@@ -186,7 +227,10 @@ function craft_wooden_pickaxe()
 	turtle.craft()
 end
 
-function find_stone()
+-- digs down and every 5 blocks pauses to check if we have enough stone to craft
+-- n = amount of stone you want
+-- need 11 stone to craft pick and furnace
+function find_stone(n)
 	haveStone = false
 	while not haveStone do
 		for i=0,4 do
@@ -204,10 +248,17 @@ function find_stone()
 			end
 		end
 
-		if turtle.getItemCount() >= 11 then
+		if turtle.getItemCount() >= n then
 			haveStone = true
 		end
 	end
+end
+
+-- you MUST call setup_craft_area() before calling this
+-- crafts a stone pickaxe
+function craft_stone_pick()
+	stoneIndex = nil
+	print(stoneIndex)
 end
 
 function craft_tool(tool)
