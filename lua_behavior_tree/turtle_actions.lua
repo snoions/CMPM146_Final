@@ -123,15 +123,19 @@ end
 -- n is a list of indicies
 function empty_inv(n)
 	-- empty out random stuff in inventory that isn't needed to craft
+	-- gets the size of n
+	nSize = table.getn(n)
 	for i=1,16 do
-		turtle.select(i)
-		-- gets the size of n
-		nSize = table.getn(n)
 		-- iter thru n and drop anything that isn't in n
+		turtle.select(i)
+		inside_n = false
 		for j=1,nSize do
-			if i ~= n[j] then
-				turtle.drop()
+			if i == n[j] then
+				inside_n = true
 			end
+		end
+		if not inside_n then
+			turtle.drop()
 		end
 	end
 end
@@ -251,13 +255,15 @@ function craft_wood_pick()
 	-- put planks in slot 1, 2, 3
 	turtle.select(woodIndex)
 	turtle.transferTo(1)
+	turtle.select(1)
 	turtle.transferTo(2, 1)
 	turtle.transferTo(3, 1)
 
 	-- move sticks to slot 5 then transfer 1 stick to slot 9
 	turtle.select(stickIndex)
-	turtle.transferTo(5)
-	turtle.transferTo(9, 1)
+	turtle.transferTo(6)
+	turtle.select(6)
+	turtle.transferTo(10, 1)
 	-- craft
 	turtle.craft()
 
