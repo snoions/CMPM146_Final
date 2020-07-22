@@ -215,7 +215,7 @@ end
 
 -- craft wood pick - requires planks and sticks
 -- you MUST call setup_craft_area() before crafting
-function craft_wood_pick()	
+function craft_wood_pick()
 	woodIndex = nil
 	stickIndex = nil
 	-- find what slot your items are in
@@ -264,29 +264,13 @@ function craft_wood_pick()
 	turtle.transferTo(2, 1)
 	turtle.transferTo(3, 1)
 
+	-- move sticks to slot 5 then transfer 1 stick to slot 9
 	turtle.select(stickIndex)
-
-	-- pickup sticks, in slot 5 then transfer 1 to slot 9
-
-	-- we have sticks now we need to move stuff around and craft a pickaxe
-	-- move sticks
-	turtle.select(stickIndex)
-	turtle.drop()
-	turtle.select(6)
-	turtle.suck()
-	turtle.drop(1)
-	turtle.select(10)
-	turtle.suck()
-	-- move wood
-	turtle.select(1)
-	turtle.drop(2)
-	turtle.select(2)
-	turtle.suck()
-	turtle.drop(1)
-	turtle.select(3)
-	turtle.suck()
+	turtle.transferTo(5)
+	turtle.transferTo(9, 1)
 	-- craft
 	turtle.craft()
+
 end
 
 -- digs down and every 5 blocks pauses to check if we have enough stone to craft
