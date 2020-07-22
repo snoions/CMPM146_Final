@@ -1,18 +1,8 @@
-require "bt_nodes"
+
 
 tools = {'wooden pickaxe', 'stone pickaxe', 'iron pickaxe', 'bench', 'furnace'}
-way_points = {}
 --a function that returns the location of an item in the turtle's find_in_inventory
 --returns 0 if not found
-function find_in_inventory(item)
-	for i = 1, 16 do
-		turtle.select(i)
-		found = turtle.getItemDetail()
-		if found and found.name == item then
-			return i
-	end
-	return 0
-end
 
 -- goes in a spiral pattern looking for a tree, when found it farms it then stops at the bottom
 -- n = width of the search spiral
@@ -318,12 +308,12 @@ end
 
 --a temporary implementation , could have been done better with GOAP or HTN
 function smelt_iron()
-	ore_location = find_in_inventory("minecraft:iron_ore")
-	if ore_location == 0 then return false end 
-	coal_location = find_in_inventory("minecraft:coal")
-	if coal_location == 0 then return false end
-	furnace_location = find_in_inventory("minecraft:furnace")
-	if furnace_location == 0 then return false end
+	ore_location = find_index("minecraft:iron_ore")
+	if ore_location == nil then return false end 
+	coal_location = find_index("minecraft:coal")
+	if coal_location == nil then return false end
+	furnace_location = find_index("minecraft:furnace")
+	if furnace_location == nil then return false end
 
 	--clear space for furnace
 	if turtle.detect() then turtle.dig() end
@@ -339,7 +329,10 @@ function smelt_iron()
 	--drop iron ore
 	turtle.select(ore_location)
 	turtle.dropDown()
-	sleep(10)
+	--wait 10 sec for iron ingot
+ 	local clock = os.clock
+    local t0 = clock()
+    while clock() - t0 <= n do end
 	--collect iron_ingot
 	turtle.digDown()
 	turtle.suckDown()
@@ -349,12 +342,3 @@ function smelt_iron()
 end
 
 
-function sleep(n)  -- seconds
-  local clock = os.clock
-  local t0 = clock()
-  while clock() - t0 <= n do end
-end
-
-function look_for_diamonds()
-
-end
