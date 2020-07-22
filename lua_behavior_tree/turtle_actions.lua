@@ -1,7 +1,7 @@
 require "bt_nodes"
 
+
 tools = {'wooden pickaxe', 'stone pickaxe', 'iron pickaxe', 'bench', 'furnace'}
-way_points = {}
 --a function that returns the location of an item in the turtle's find_in_inventory
 --returns 0 if not found
 function find_in_inventory(item)
@@ -10,6 +10,7 @@ function find_in_inventory(item)
 		found = turtle.getItemDetail()
 		if found and found.name == item then
 			return i
+		end
 	end
 	return 0
 end
@@ -217,14 +218,14 @@ function mine_iron()
 
 end
 
---a temporary implementation , could have been done better with GOAP or HTN
+--precondition: turtle has an iron ore, a coal, and a furnace in its inventory
 function smelt_iron()
 	ore_location = find_in_inventory("minecraf:iron_ore")
-	if ore_location == 0 then
-		return false
+	if ore_location == 0 then return false end 
 	coal_location = find_in_inventory("minecraf:coal")
-	if coal_location == 0 then
-		return false
+	if coal_location == 0 then return false end
+	furnace_location = find_in_inventory("minecraf:furnce")
+	if furnace_location == 0 then return false end
 
 	--assume we are facing a furnace
 
@@ -237,9 +238,46 @@ function smelt_iron()
 	--drop iron ore
 	turtle.select(ore_location)
 	turtle.dropDown()
+	return true
 
 end
 
 function look_for_diamonds()
 
 end
+
+function dig_to_bedrock()
+    success, blockUnder = turtle.inspectDown()
+    while not success or blockUnder.name ~= "minecraf:bedrock" do
+        if success then
+            turtle.digDown()
+        end
+        turtle.down()
+        success, blockUnder = turtle.inspectDown()
+    end
+    return true
+end
+ 
+function go_to_level(current, goal)
+    if current == goal then return true end
+    while current~=goal do
+        if current > goal then
+            if turtle.detectDown() then
+                turtle.digDown()
+            end
+            current = current -1
+            print(current)
+            turtle.down()
+        else
+            if turtle.detectUp() then
+                turtle.digUp()
+            end
+            current = current +1
+            turtle.up()
+        end
+        print(current)
+    end
+ return true
+end
+ 
+ 
