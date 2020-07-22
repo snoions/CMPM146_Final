@@ -90,29 +90,36 @@ function look_for_tree()
 	end
 end
 
+-- this funciton should always be called before crafting something
+-- sets up a crafting space and prepares you to dump things not needed in your inventory
+function setup_craft_area()
+	-- check if there is a block under you, if not place one
+	if not turtle.detectDown() then
+		turtle.placeDown()
+	end
+	-- place barricade around if empty, then set up to dump items
+	turtle.place()
+	turtle.turnLeft()
+	turtle.place()
+	turtle.turnLeft()
+	turtle.place()
+	turtle.turnLeft()
+	turtle.dig()
+	turtle.forward()
+	turtle.turnLeft()
+	turtle.dig()
+	turtle.forward()
+	turtle.dig()
+	-- dump items here then when you are done dumping, do turtle.back() and turtle.turnLeft() to start inventory sorting and crafting!
+end
+
 -- craft wood pick
 -- check if there is a block under you, if not place one
 -- get rid of the block in front of you so that you can drop and suck without interference
 -- move forward and turn twice
 function craft_wooden_pickaxe()	
 
-	-- drop then put the wood in the first slot
-
-	-- check if there is a block under you, if not place one
-	if not turtle.detectDown() then
-		turtle.placeDown()
-	end
-	turtle.dig()
-	-- turn twice place a block then move back
-	-- this creates an environment where you can use drop() and suck() consistently (the items don't get lost somehow)
-	turtle.turnLeft()
-	turtle.turnLeft()
-	turtle.dig()
-
-
-	-- get rid of extra blocks so that there is no inventory overflow
-	turtle.forward()
-	-- get rid of unecessary stuff in inventory #TODO
+	-- find what slot your wood is in
 	for i=1,16 do
 		turtle.select(i)
 		item = turtle.getItemDetail()
@@ -123,30 +130,24 @@ function craft_wooden_pickaxe()
 			end
 		end
 	end
-	-- empty out random stuff in inventory
-	turtle.turnLeft()
+	-- empty out random stuff in inventory that isn't needed to craft
 	for i=1,16 do
 		turtle.select(i)
 		if i ~= woodIndex then
 			turtle.drop()
 		end
 	end
+
+	-- get rid of extra blocks so that there is no inventory overflow
 	turtle.select(woodIndex)
 	amt = turtle.getItemCount()
 		if amt > 16 then
 			turtle.drop(amt-16)
 		end
-	turtle.turnRight()
+
+	-- go back to crafting area
 	turtle.back()
-	-- create a barricade to ensure suck consistancy
-	turtle.place()
 	turtle.turnLeft()
-	turtle.place()
-	turtle.turnLeft()
-	turtle.turnLeft()
-	turtle.place()
-	turtle.turnLeft()
-	turtle.back()
 
 	-- get wood in first slot
 	turtle.select(woodIndex)
@@ -154,11 +155,12 @@ function craft_wooden_pickaxe()
 	turtle.select(1)
 	turtle.suck()
 
-	-- craft stuff
+	-- craft wood
 	-- turtle.back()
 	turtle.craft(16)
 
-	-- reposition wood into diff slot so we can craft sticks
+	-- reposition wood into diff slot to
+	-- craft sticks
 	turtle.drop(1)
 	turtle.select(5)
 	turtle.suck()
