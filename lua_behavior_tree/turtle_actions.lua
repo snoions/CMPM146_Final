@@ -265,6 +265,7 @@ function craft_wood_pick()
 	-- put planks in slot 1, 2, 3
 	turtle.select(woodIndex)
 	turtle.transferTo(1)
+	turtle.select(1)
 	turtle.transferTo(2, 1)
 	turtle.transferTo(3, 1)
 
