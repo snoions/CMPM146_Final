@@ -370,20 +370,20 @@ function craft_stone_pick()
 end
 
 -- you MUST call setup_craft_area() before calling this
--- crafts a stone pickaxe
+-- crafts a iron pickaxe
 function craft_iron_pick()
 	ironIndex = nil
 	stickIndex = nil
 	-- find what slot your items are in
 	ironIndex = find_index("minecraft:iron_ingot")
 	if ironIndex == nil then
-		print("ERROR: You have no cobblestone")
+		print("ERROR: You have no iron ingots")
 		return false
 	end
 	-- check to make sure you have enough
 	stoneCount = turtle.getItemCount(ironIndex)
 	if stoneCount < 3 then
-		print("ERROR: You don't have enough cobblestone")
+		print("ERROR: You don't have enough iron ingots")
 		return false
 	end
 
@@ -433,8 +433,45 @@ function craft_iron_pick()
 	
 end
 
-function craft_tool(tool)
+-- you MUST call setup_craft_area() before calling this
+-- crafts a furnace
+function craft_furnace()
+	stoneIndex = nil
+	-- find what slot your items are in
+	stoneIndex = find_index("minecraft:cobblestone")
+	if stoneIndex == nil then
+		print("ERROR: You have no cobblestone")
+		return false
+	end
+	-- check to make sure you have enough
+	stoneCount = turtle.getItemCount(stoneIndex)
+	if stoneCount < 8 then
+		print("ERROR: You don't have enough cobblestone")
+		return false
+	end
 
+	-- empty out random stuff in inventory that isn't needed to craft
+	list = {stoneIndex}
+	empty_inv(list)
+
+	-- go back to crafting area
+	turtle.turnLeft()
+
+	-- put stone in slot 1-3, 5, 7, 9-11
+	turtle.select(stoneIndex)
+	turtle.transferTo(1)
+	turtle.select(1)
+	turtle.transferTo(2, 1)
+	turtle.transferTo(3, 1)
+	turtle.transferTo(5, 1)
+	turtle.transferTo(7, 1)
+	turtle.transferTo(9, 1)
+	turtle.transferTo(10, 1)
+	turtle.transferTo(11, 1)
+
+	-- craft
+	return turtle.craft(1)
+	
 end
 
 
