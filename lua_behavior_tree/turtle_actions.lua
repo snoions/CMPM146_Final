@@ -100,13 +100,18 @@ function setup_craft_area()
 	turtle.turnLeft()
 	turtle.dig()
 	turtle.forward()
-	turtle.placeDown()
+	if not turtle.detectDown() then
+		turtle.placeDown()
+	end
 	turtle.place()
 	turtle.turnRight()
 	turtle.place()
 	turtle.turnLeft()
 	turtle.back()
-	turtle.placeDown()
+	if not turtle.detectDown() then
+		turtle.placeDown()
+	end
+	return true
 	-- dump items here then when you are done dumping, turtle.turnLeft() to start crafting
 end
 
@@ -116,6 +121,7 @@ function pickup_leftover()
 	for i=1,16 do
 		turtle.suck()
 	end
+	return true
 end
 
 
