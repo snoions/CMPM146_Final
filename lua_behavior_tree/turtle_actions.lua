@@ -251,7 +251,7 @@ function craft_wood_pick()
 	turtle.turnLeft()
 
 	-- at this point you FOR SURE only have two items in your inventory
-	-- move sticks to open spot
+	-- move sticks to open spot (try last 2 slots at least one will be avail 100% of time)
 	turtle.select(stickIndex)
 	if turtle.transferTo(16) then
 		stickIndex = 16
@@ -309,7 +309,64 @@ end
 -- crafts a stone pickaxe
 function craft_stone_pick()
 	stoneIndex = nil
-	print(stoneIndex)
+	stickIndex = nil
+	-- find what slot your items are in
+	stoneIndex = find_index("minecraft:cobblestone")
+	if stoneIndex == nil then
+		print("ERROR: You have no cobblestone")
+		return false
+	end
+	-- check to make sure you have enough
+	stoneCount = turtle.getItemCount(stoneIndex)
+	if stoneCount < 3 then
+		print("ERROR: You don't have enough cobblestone")
+		return false
+	end
+
+	stickIndex = find_index("minecraft:stick")
+	if stickIndex == nil then
+		print("ERROR: You have no sticks")
+		return false
+	end
+	-- check to make sure you have enough
+	stickCount = turtle.getItemCount(stickIndex)
+	if stickCount < 2 then
+		print("ERROR: You don't have enough sticks")
+		return false
+	end
+
+	-- empty out random stuff in inventory that isn't needed to craft
+	list = {stoneIndex, stickIndex}
+	empty_inv(list)
+
+	-- go back to crafting area
+	turtle.turnLeft()
+
+	-- at this point you FOR SURE only have two items in your inventory
+	-- move sticks to open spot (try last 2 slots at least one will be avail 100% of time)
+	turtle.select(stickIndex)
+	if turtle.transferTo(16) then
+		stickIndex = 16
+	else 
+		turtle.transferTo(15)
+		stickIndex = 15
+	end
+
+	-- put stone in slot 1, 2, 3
+	turtle.select(stoneIndex)
+	turtle.transferTo(1)
+	turtle.select(1)
+	turtle.transferTo(2, 1)
+	turtle.transferTo(3, 1)
+
+	-- move sticks to slot 5 then transfer 1 stick to slot 9
+	turtle.select(stickIndex)
+	turtle.transferTo(6)
+	turtle.select(6)
+	turtle.transferTo(10, 1)
+	-- craft
+	return turtle.craft(1)
+	
 end
 
 function craft_tool(tool)
