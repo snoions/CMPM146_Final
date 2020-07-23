@@ -175,7 +175,7 @@ function craft_planks()
 	end
 	if woodIndex == nil then
 		print("ERROR: You have no logs!")
-		return
+		return false
 	end
 	list = {woodIndex}
 	-- get rid of unecessary items
@@ -194,7 +194,7 @@ function craft_sticks()
 	woodIndex = find_index("minecraft:planks")
 	if woodIndex == nil then
 		print("ERROR: You have no planks!")
-		return
+		return false
 	end
 	list = {woodIndex}
 	-- get rid of unecessary items
@@ -222,23 +222,25 @@ function craft_wood_pick()
 	woodIndex = find_index("minecraft:planks")
 	if woodIndex == nil then
 		print("ERROR: You have no planks")
+		return false
 	end
 	-- check to make sure you have enough
 	plankCount = turtle.getItemCount(woodIndex)
 	if plankCount < 3 then
 		print("ERROR: You don't have enough planks")
-		return
+		return false
 	end
 
 	stickIndex = find_index("minecraft:stick")
 	if stickIndex == nil then
 		print("ERROR: You have no sticks")
+		return false
 	end
 	-- check to make sure you have enough
 	stickCount = turtle.getItemCount(stickIndex)
 	if stickCount < 2 then
 		print("ERROR: You don't have enough sticks")
-		return
+		return false
 	end
 
 	-- empty out random stuff in inventory that isn't needed to craft
@@ -298,6 +300,7 @@ function find_stone(n)
 
 		if turtle.getItemCount() >= n then
 			haveStone = true
+			return true
 		end
 	end
 end
