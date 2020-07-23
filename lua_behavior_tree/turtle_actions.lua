@@ -480,13 +480,28 @@ function mine_iron()
 end
 
 --a temporary implementation , could have been done better with GOAP or HTN
+-- smelts 3 iron ore
 function smelt_iron()
+	-- n is sleep time
+	n = 10
 	ore_location = find_index("minecraft:iron_ore")
-	if ore_location == nil then return false end 
+	if ore_location == nil then 
+		print("You have no iron ore")
+		return false 
+	end 
 	coal_location = find_index("minecraft:coal")
-	if coal_location == nil then return false end
+	if coal_location == nil then 
+		print("You have no coal")
+		return false 
+	end
 	furnace_location = find_index("minecraft:furnace")
-	if furnace_location == nil then return false end
+	if furnace_location == nil then 
+		print("You have no furnace")
+		return false 
+	end
+
+	-- create blocks around furnace area so when you break the furnace the item pickup is not rectangle
+	-- for some reason suck doesn't suck out of the finished slot in furances T_T
 
 	--clear space for furnace
 	if turtle.detect() then turtle.dig() end
@@ -497,21 +512,17 @@ function smelt_iron()
 	turtle.select(coal_location)
 	turtle.drop()
 	--move to the top of the furnace
+	if turtle.detectUp() then turtle.digUp() end
 	turtle.up()
+	if turtle.detect() then turtle.dig() end
 	turtle.forward()
 	--drop iron ore
 	turtle.select(ore_location)
 	turtle.dropDown()
-	--wait 10 sec for iron ingot
- 	local clock = os.clock
-    local t0 = clock()
-    while clock() - t0 <= n do end
+	--wait 10 sec for iron ingot to smelt
+  	sleep(n)
 	--collect iron_ingot
 	turtle.digDown()
 	turtle.suckDown()
-	turtle.down()
 	return true
-
 end
-
-
