@@ -179,7 +179,7 @@ function craft_planks()
 	turtle.turnLeft()
 
 	-- craft planks
-	turtle.craft()
+	return turtle.craft(1)
 end
 
 -- crafts sticks - requires planks
@@ -204,7 +204,7 @@ function craft_sticks()
 	-- reposition wood into slot under to match recipe
 	-- craft sticks
 	turtle.transferTo(5, 1)
-	turtle.craft(1)
+	return turtle.craft(1)
 end
 
 -- craft wood pick - requires planks and sticks
@@ -265,7 +265,7 @@ function craft_wood_pick()
 	turtle.select(6)
 	turtle.transferTo(10, 1)
 	-- craft
-	turtle.craft()
+	return turtle.craft(1)
 
 end
 
