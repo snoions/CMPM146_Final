@@ -1,5 +1,3 @@
-
-
 function dig_to_bedrock()
     success, blockUnder = turtle.inspectDown()
     while not success or blockUnder.name ~= "minecraf:bedrock" do
@@ -66,6 +64,119 @@ function mine_strip(length)
         turtle.forward()
         turtle.digDown()
         turtle.digUp()
+    end
+    return true
+end
+
+-- the end result is a n(2)-1 x n(2)-1 square mined
+function mine_spiral_out(n)
+    width = n
+    length = 0
+    for j=0,width do
+        for i=0,1 do
+            for i=0,length do
+                turtle.dig()
+                turtle.forward()
+            end
+            turtle.turnRight()
+        end
+        length = length + 1
+    end
+    for i=0,length-1 do
+        turtle.dig()
+        turtle.forward()
+    end
+end
+
+-- the end result is a n(2)-1 x n(2)-1 square mined
+function mine_spiral_in(n)
+    length = n
+    for i=0,length do
+        turtle.dig()
+        turtle.forward()
+    end
+    turtle.turnRight()
+    for j=0,width do
+        for i=0,1 do
+            for i=0,length do
+                turtle.dig()
+                turtle.forward()
+            end
+            turtle.turnRight()
+        end
+        length = length - 1
+    end
+end
+
+-- empties everything in your inventory except the specified indexes in n
+-- n is a list of indicies
+function empty_inv(n)
+    -- empty out random stuff in inventory that isn't needed to craft
+    -- gets the size of n
+    nSize = table.getn(n)
+    for i=1,16 do
+        -- iter thru n and drop anything that isn't in n
+        turtle.select(i)
+        inside_n = false
+        for j=1,nSize do
+            if i == n[j] then
+                inside_n = true
+            end
+        end
+        if not inside_n then
+            turtle.drop()
+        end
+    end
+end
+-- n = a string of what you want
+-- returns the index of the item
+-- it also selects the slot that your item is in
+-- if not in inventory return nil
+function find_index(n)
+    index = nil
+    for i=1,16 do
+        turtle.select(i)
+        item = turtle.getItemDetail()
+        if item ~= nil then
+            if item.name == n then
+                index = i
+                break
+            end
+        end
+    end
+    return index
+end
+
+-- dig down 3 layers then mine in 5x x 4y x 5z
+-- spiral out, spiral in, dig down repeat
+function look_for_iron()
+    finished = false
+    amt = 3
+    while not finished do
+        for i=0,1 do
+            mine_spiral_out(3)
+            -- reposition
+            turtle.digDown()
+            turtle.down()
+            turtle.turnRight()
+            mine_spiral_in(3)
+            -- reposition
+            turtle.digDown()
+            turtle.down()
+        end
+        for i=0,1 do
+            turtle.digDown()
+            turtle.down()
+        end
+        ironOreIndex = find_index("minecraft:iron_ore")
+        if ironOreIndex ~= nil then
+            ironOreCount = turtle.getItemCount(ironOreIndex)
+            if ironOreCount >= amt then
+                finished = true
+            end
+        end
+        list = {ironOreIndex}
+        empty_inv(list)
     end
     return true
 end

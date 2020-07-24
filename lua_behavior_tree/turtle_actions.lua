@@ -500,7 +500,6 @@ function smelt_iron()
 		return false 
 	end
 
-	-- create blocks around furnace area so when you break the furnace the item pickup is not rectangle
 	-- for some reason suck doesn't suck out of the finished slot in furances T_T
 
 	--clear space for furnace
@@ -521,8 +520,30 @@ function smelt_iron()
 	turtle.dropDown()
 	--wait 10 sec for iron ingot to smelt
   	sleep(n)
-	--collect iron_ingot
+	--go in a 3x3 area and dig and suck to collect iron_ingot
+	-- start in center
+	-- breaks furnace
 	turtle.digDown()
+	turtle.suckDown()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.turnRight()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.turnRight()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.turnRight()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.turnRight()
+	turtle.forward()
+	turtle.suckDown()
+	turtle.forward()
 	turtle.suckDown()
 	return true
 end
