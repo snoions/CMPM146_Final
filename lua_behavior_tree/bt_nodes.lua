@@ -1,6 +1,7 @@
-require "class"
+-- require("class")
+os.loadAPI("class")
 
-Node = class(function(o, name)
+Node = class.class(function(o, name)
 	o.name = name
 end)
 
@@ -12,7 +13,7 @@ function Node:tostring()
 end
 
 
-Composite = class(Node, function (o, name, child_nodes)
+Composite = class.class(Node, function (o, name, child_nodes)
 	Node.init(o, name)
 	o.child_nodes = child_nodes
 end)
@@ -37,13 +38,13 @@ function Composite:tree_to_string(indent)
 end
 
 
-Decorator = class(Node, function (o, name, child_node)
+Decorator = class.class(Node, function (o, name, child_node)
 	Node.init(o, name)
 	o.child_node = child_node
 end)
 
 
-Sequence = class(Composite)
+Sequence = class.class(Composite)
 
 function Sequence:execute()
 	for k, v in pairs(self.child_nodes)
@@ -57,7 +58,7 @@ function Sequence:execute()
    	return true
 end
 
-Selector = class(Composite)
+Selector = class.class(Composite)
 
 function Selector:execute()
    for k, v in pairs(self.child_nodes)
@@ -72,7 +73,7 @@ function Selector:execute()
 end
 
 
-Leaf = class(Node, function (o, name, func)
+Leaf = class.class(Node, function (o, name, func)
 	Node.init(o, name)
 	o.func = func
 end)

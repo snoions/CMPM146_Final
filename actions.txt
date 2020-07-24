@@ -1,0 +1,34 @@
+punch for wood
+punch for wood
+punch for wood
+craft plank
+craft bench
+craft plank
+craft stick
+craft plank
+craft wooden_pickaxe at bench
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+wooden_pickaxe for cobble
+craft stone_pickaxe at bench
+stone_pickaxe for coal
+stone_pickaxe for coal
+stone_pickaxe for ore
+craft furnace at bench
+smelt ore in furnace
+stone_pickaxe for ore
+smelt ore in furnace
+stone_pickaxe for coal
+stone_pickaxe for ore
+smelt ore in furnace
+craft stick
+craft iron_pickaxe at bench
+iron_pickaxe for diamond

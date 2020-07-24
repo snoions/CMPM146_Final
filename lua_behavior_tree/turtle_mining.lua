@@ -1,6 +1,7 @@
 function dig_to_bedrock()
+    print("dig_to_bedrock")
     success, blockUnder = turtle.inspectDown()
-    while blockUnder.name ~= "minecraf:bedrock" do
+    while blockUnder.name ~= "minecraft:bedrock" do
         if success then
             turtle.digDown()
         end
@@ -11,6 +12,7 @@ function dig_to_bedrock()
 end
  
 function go_to_level(current, goal)
+    print("go_to_level")
     if turtle.getFuelLevel() < math.abs(current-goal) then
         print("not enough fuel, fuelLevel="..turtle.getFuelLevel())
         return false
@@ -37,6 +39,7 @@ function go_to_level(current, goal)
 end
  
 function mine_hallway(length, width)
+    print("mine_hallway")
     mine_strip(length)
     for i = 2, width do
         if i%2 ==0 then turtle.turnRight() else turtle.turnLeft() end
@@ -49,6 +52,7 @@ function mine_hallway(length, width)
 end
  
 function mine_strip(length)
+    print("mine_strip")
     turtle.digDown()
     turtle.digUp()
     for i = 1, length do
@@ -62,6 +66,7 @@ end
 
 -- the end result is a n(2)-1 x n(2)-1 square mined
 function mine_spiral_out(n)
+    print("mine_spiral_out")
     width = n
     length = 0
     for j=0,width do
@@ -82,6 +87,7 @@ end
 
 -- the end result is a n(2)-1 x n(2)-1 square mined
 function mine_spiral_in(n)
+    print("mine_spiral_in")
     length = n
     for i=0,length do
         turtle.dig()
@@ -103,6 +109,7 @@ end
 -- empties everything in your inventory except the specified indexes in n
 -- n is a list of indicies
 function empty_inv(n)
+    print("empty_inv")
     -- empty out random stuff in inventory that isn't needed to craft
     -- gets the size of n
     nSize = table.getn(n)
@@ -125,6 +132,7 @@ end
 -- it also selects the slot that your item is in
 -- if not in inventory return nil
 function find_index(n)
+    print("find_index")
     index = nil
     for i=1,16 do
         turtle.select(i)
@@ -142,6 +150,7 @@ end
 -- dig down 3 layers then mine in 5x x 4y x 5z
 -- spiral out, spiral in, dig down repeat
 function look_for_coal()
+    print("look_for_coal")
     finished = false
     amt = 5
     while not finished do
@@ -167,7 +176,11 @@ function look_for_coal()
                 finished = true
             end
         end
-        list = {coalIndex}
+        woodIndex = find_index("minecraft:planks")
+        stickIndex = find_index("minecraft:stick")
+        stoneIndex = find_index("minecraft:cobblestone")
+        ironOreIndex = find_index("minecraft:iron_ore")
+        list = {coalIndex, stickIndex, stoneIndex, ironOreIndex}
         empty_inv(list)
     end
     return true
@@ -176,6 +189,7 @@ end
 -- dig down 3 layers then mine in 5x x 4y x 5z
 -- spiral out, spiral in, dig down repeat
 function look_for_iron()
+    print("look_for_iron")
     finished = false
     amt = 3
     while not finished do
@@ -201,7 +215,11 @@ function look_for_iron()
                 finished = true
             end
         end
-        list = {ironOreIndex}
+        woodIndex = find_index("minecraft:planks")
+        stickIndex = find_index("minecraft:stick")
+        stoneIndex = find_index("minecraft:cobblestone")
+        coalIndex = find_index("minecraft:coal")
+        list = {ironOreIndex, woodIndex, stickIndex, stoneIndex, coalIndex}
         empty_inv(list)
     end
     return true
@@ -210,11 +228,12 @@ end
 -- first descend to layers 5-12
 -- hit bedrock then go up 5 layers then strip mine FOR DAYS!!!!!!
 function look_for_diamonds()
+    print("look_for_diamonds")
     finished = false
-    -- turtle.dig_to_bedrock()
-    -- for i=0,4 do
-    --  turtle.up()
-    -- end
+    dig_to_bedrock()
+    for i=0,4 do
+     turtle.up()
+    end
     while not finished do
         turtle.dig()
         turtle.forward()

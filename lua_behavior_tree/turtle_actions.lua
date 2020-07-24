@@ -6,10 +6,11 @@ tools = {'wooden pickaxe', 'stone pickaxe', 'iron pickaxe', 'bench', 'furnace'}
 
 -- goes in a spiral pattern looking for a tree, when found it farms it then stops at the bottom
 -- n = width of the search spiral
-function find_wood(n)
+function find_wood()
+	print("find_wood")
 	-- end result is a width+1 x width+2 rectangle
 	length = 0
-	width = n
+	width = 10
 	downCount = 0
 	treeDone = false
 	for j=0,width do
@@ -72,7 +73,7 @@ function find_wood(n)
 			turtle.turnRight()
 			-- if we finish descending tree then stop
 			if treeDone then
-				break
+				return true
 			end
 		end
 		
@@ -84,40 +85,48 @@ end
 -- this is necessary because the bot has to clear unecessary items and sort them around to match the specific pattern
 -- sets up a crafting space and prepares you to dump things not needed in your inventory
 function setup_craft_area()
-	-- check if there is a block under you, if not place one
-	if not turtle.detectDown() then
-		turtle.placeDown()
-	end
-	-- place barricade around if empty, then set up to dump items
-	turtle.place()
+	print("setup_craft_area")
+	-- -- check if there is a block under you, if not place one
+	-- if not turtle.detectDown() then
+	-- 	turtle.placeDown()
+	-- end
+	-- -- place barricade around if empty, then set up to dump items
+	-- turtle.place()
+	-- turtle.turnLeft()
+	-- turtle.place()
+	-- turtle.turnLeft()
+	-- turtle.place()
+	-- turtle.turnLeft()
+	-- turtle.dig()
+	-- turtle.forward()
+	-- turtle.turnLeft()
+	-- turtle.dig()
+	-- turtle.forward()
+	-- if not turtle.detectDown() then
+	-- 	turtle.placeDown()
+	-- end
+	-- turtle.place()
+	-- turtle.turnRight()
+	-- turtle.place()
+	-- turtle.turnLeft()
+	-- turtle.back()
+	-- if not turtle.detectDown() then
+	-- 	turtle.placeDown()
+	-- end
+	turtle.placeDown()
+	turtle.dig()
 	turtle.turnLeft()
-	turtle.place()
-	turtle.turnLeft()
-	turtle.place()
 	turtle.turnLeft()
 	turtle.dig()
-	turtle.forward()
-	turtle.turnLeft()
-	turtle.dig()
-	turtle.forward()
-	if not turtle.detectDown() then
-		turtle.placeDown()
-	end
 	turtle.place()
-	turtle.turnRight()
-	turtle.place()
-	turtle.turnLeft()
 	turtle.back()
-	if not turtle.detectDown() then
-		turtle.placeDown()
-	end
 	return true
 	-- dump items here then when you are done dumping, turtle.turnLeft() to start crafting
 end
 
 -- call this function after you finish crafting to pickup all your extra items you dropped
 function pickup_leftover()
-	turtle.turnRight()
+	print("pickup_leftover")
 	for i=1,16 do
 		turtle.suck()
 	end
@@ -128,6 +137,7 @@ end
 -- empties everything in your inventory except the specified indexes in n
 -- n is a list of indicies
 function empty_inv(n)
+	print("empty_inv")
 	-- empty out random stuff in inventory that isn't needed to craft
 	-- gets the size of n
 	nSize = table.getn(n)
@@ -151,6 +161,7 @@ end
 -- it also selects the slot that your item is in
 -- if not in inventory return nil
 function find_index(n)
+	print("find_index")
 	index = nil
 	for i=1,16 do
 		turtle.select(i)
@@ -168,6 +179,7 @@ end
 -- craft planks - requires logs
 -- you MUST call setup_craft_area() before crafting
 function craft_planks()
+	print("craft_planks")
 	-- find what slot your log is in
 	woodIndex = find_index("minecraft:log")
 	if woodIndex == nil then
@@ -181,16 +193,14 @@ function craft_planks()
 	-- get rid of unecessary items
 	empty_inv(list)
 
-	-- go back to crafting area
-	turtle.turnLeft()
-
 	-- craft planks
-	return turtle.craft(1)
+	return turtle.craft(20)
 end
 
 -- crafts sticks - requires planks
 -- you MUST call setup_craft_area() before crafting
 function craft_sticks()
+	print("craft_sticks")
 	woodIndex = find_index("minecraft:planks")
 	if woodIndex == nil then
 		print("ERROR: You have no planks!")
@@ -200,9 +210,6 @@ function craft_sticks()
 	-- get rid of unecessary items
 	empty_inv(list)
 
-	-- go back to crafting area
-	turtle.turnLeft()
-
 	-- put planks in first slot
 	turtle.select(woodIndex)
 	turtle.transferTo(1)
@@ -210,12 +217,44 @@ function craft_sticks()
 	-- reposition wood into slot under to match recipe
 	-- craft sticks
 	turtle.transferTo(5, 1)
+	return turtle.craft(4)
+end
+
+-- requires 4 wood
+function craft_bench()
+	print("craft_bench")
+	woodIndex = find_index("minecraft:planks")
+	if woodIndex == nil then
+		print("ERROR: You have no planks!")
+		return false
+	end
+	-- check to make sure you have enough
+	plankCount = turtle.getItemCount(woodIndex)
+	if plankCount < 4 then
+		print("ERROR: You don't have enough planks")
+		return false
+	end
+
+	-- empty out random stuff in inventory that isn't needed to craft
+	list = {woodIndex}
+	empty_inv(list)
+
+	-- put planks in slot 1, 2, 3
+	turtle.select(woodIndex)
+	turtle.transferTo(1)
+	turtle.select(1)
+	turtle.transferTo(2,1)
+	turtle.transferTo(5,1)
+	turtle.transferTo(6,1)
+
 	return turtle.craft(1)
+
 end
 
 -- craft wood pick - requires planks and sticks
 -- you MUST call setup_craft_area() before crafting
 function craft_wood_pick()
+	print("craft_wood_pick")
 	woodIndex = nil
 	stickIndex = nil
 	-- find what slot your items are in
@@ -247,9 +286,6 @@ function craft_wood_pick()
 	list = {woodIndex, stickIndex}
 	empty_inv(list)
 
-	-- go back to crafting area
-	turtle.turnLeft()
-
 	-- at this point you FOR SURE only have two items in your inventory
 	-- move sticks to open spot (try last 2 slots at least one will be avail 100% of time)
 	turtle.select(stickIndex)
@@ -277,10 +313,55 @@ function craft_wood_pick()
 
 end
 
+-- do we have enough of X if not return false, else true
+function check_wood()
+	print("check_wood")
+	plankIndex = find_index("minecraft:planks")
+	plankCount = turtle.getItemCount(plankIndex)
+	logIndex = find_index("minecraft:log")
+	logCount = turtle.getItemCount(logIndex)
+	log2Index = find_index("minecraft:log2")
+	log2Count = turtle.getItemCount(log2Index)
+
+	if plankCount < 10 and logCount < 4 and log2Count < 4 then
+		print("failure")
+		return false
+	end
+	return true
+end
+function check_coal()
+	print("check_coal")
+	coalIndex = find_index("minecraft:coal")
+	coalCount = turtle.getItemCount(coalIndex)
+	if coalCount < 3 then
+		return false
+	end
+	return true
+end
+function check_iron()
+	print("check_iron")
+	ironIndex = find_index("minecraft:iron_ingot")
+	ironCount = turtle.getItemCount(ironIndex)
+	if ironCount < 3 then
+		return false
+	end
+	return true
+end
+function check_stone()
+	print("check_stone")
+	stoneIndex = find_index("minecraft:cobblestone")
+	stoneCount = turtle.getItemCount(stoneIndex)
+	if stoneCount < 11 then
+		return false
+	end
+	return true
+end
+
 -- digs down and every 5 blocks pauses to check if we have enough stone to craft
 -- n = amount of stone you want
 -- need 11 stone to craft pick and furnace
-function find_stone(n)
+function find_stone()
+	print("find_stone")
 	haveStone = false
 	while not haveStone do
 		for i=0,4 do
@@ -298,7 +379,7 @@ function find_stone(n)
 			end
 		end
 
-		if turtle.getItemCount() >= n then
+		if turtle.getItemCount() >= 11 then
 			haveStone = true
 			return true
 		end
@@ -308,6 +389,7 @@ end
 -- you MUST call setup_craft_area() before calling this
 -- crafts a stone pickaxe
 function craft_stone_pick()
+	print("craft_stone_pick")
 	stoneIndex = nil
 	stickIndex = nil
 	-- find what slot your items are in
@@ -339,9 +421,6 @@ function craft_stone_pick()
 	list = {stoneIndex, stickIndex}
 	empty_inv(list)
 
-	-- go back to crafting area
-	turtle.turnLeft()
-
 	-- at this point you FOR SURE only have two items in your inventory
 	-- move sticks to open spot (try last 2 slots at least one will be avail 100% of time)
 	turtle.select(stickIndex)
@@ -372,6 +451,7 @@ end
 -- you MUST call setup_craft_area() before calling this
 -- crafts a iron pickaxe
 function craft_iron_pick()
+	print("craft_iron_pick")
 	ironIndex = nil
 	stickIndex = nil
 	-- find what slot your items are in
@@ -403,9 +483,6 @@ function craft_iron_pick()
 	list = {ironIndex, stickIndex}
 	empty_inv(list)
 
-	-- go back to crafting area
-	turtle.turnLeft()
-
 	-- at this point you FOR SURE only have two items in your inventory
 	-- move sticks to open spot (try last 2 slots at least one will be avail 100% of time)
 	turtle.select(stickIndex)
@@ -436,6 +513,7 @@ end
 -- you MUST call setup_craft_area() before calling this
 -- crafts a furnace
 function craft_furnace()
+	print("craft_furnace")
 	stoneIndex = nil
 	-- find what slot your items are in
 	stoneIndex = find_index("minecraft:cobblestone")
@@ -453,9 +531,6 @@ function craft_furnace()
 	-- empty out random stuff in inventory that isn't needed to craft
 	list = {stoneIndex}
 	empty_inv(list)
-
-	-- go back to crafting area
-	turtle.turnLeft()
 
 	-- put stone in slot 1-3, 5, 7, 9-11
 	turtle.select(stoneIndex)
@@ -478,6 +553,7 @@ end
 --a temporary implementation , could have been done better with GOAP or HTN
 -- smelts 3 iron ore
 function smelt_iron()
+	print("smelt_iron")
 	-- n is sleep time
 	n = 30
 	ore_location = find_index("minecraft:iron_ore")
