@@ -1,6 +1,6 @@
 function dig_to_bedrock()
     success, blockUnder = turtle.inspectDown()
-    while not success or blockUnder.name ~= "minecraf:bedrock" do
+    while blockUnder.name ~= "minecraf:bedrock" do
         if success then
             turtle.digDown()
         end
@@ -37,10 +37,6 @@ function go_to_level(current, goal)
 end
  
 function mine_hallway(length, width)
-    if turtle.getFuelLevel()<length*width +width then
-        print("not enough fuel, fuelLevel="..turtle.getFuelLevel())
-        return false
-    end
     mine_strip(length)
     for i = 2, width do
         if i%2 ==0 then turtle.turnRight() else turtle.turnLeft() end
@@ -53,10 +49,6 @@ function mine_hallway(length, width)
 end
  
 function mine_strip(length)
-    if turtle.getFuelLevel() < length then
-        print("not enough fuel, fuelLevel="..turtle.getFuelLevel())
-        return false
-    end
     turtle.digDown()
     turtle.digUp()
     for i = 1, length do
@@ -181,6 +173,23 @@ function look_for_iron()
     return true
 end
 
+-- first descend to layers 5-12
+-- hit bedrock then go up 5 layers then strip mine FOR DAYS!!!!!!
 function look_for_diamonds()
-
+    finished = false
+    -- turtle.dig_to_bedrock()
+    -- for i=0,4 do
+    --  turtle.up()
+    -- end
+    while not finished do
+        turtle.dig()
+        turtle.forward()
+        turtle.turnLeft()
+        mine_hallway(5,6)
+        turtle.turnLeft()
+        diamondIndex = find_index("minecraft:diamond")
+        if diamondIndex ~= nil then
+            finished = true
+        end
+    end
 end
