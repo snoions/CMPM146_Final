@@ -141,6 +141,40 @@ end
 
 -- dig down 3 layers then mine in 5x x 4y x 5z
 -- spiral out, spiral in, dig down repeat
+function look_for_coal()
+    finished = false
+    amt = 5
+    while not finished do
+        for i=0,1 do
+            mine_spiral_out(3)
+            -- reposition
+            turtle.digDown()
+            turtle.down()
+            turtle.turnRight()
+            mine_spiral_in(3)
+            -- reposition
+            turtle.digDown()
+            turtle.down()
+        end
+        for i=0,1 do
+            turtle.digDown()
+            turtle.down()
+        end
+        coalIndex = find_index("minecraft:coal")
+        if coalIndex ~= nil then
+            coalCount = turtle.getItemCount(coalIndex)
+            if coalCount >= amt then
+                finished = true
+            end
+        end
+        list = {coalIndex}
+        empty_inv(list)
+    end
+    return true
+end
+
+-- dig down 3 layers then mine in 5x x 4y x 5z
+-- spiral out, spiral in, dig down repeat
 function look_for_iron()
     finished = false
     amt = 3

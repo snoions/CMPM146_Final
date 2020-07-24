@@ -475,10 +475,6 @@ function craft_furnace()
 end
 
 
-function mine_iron()
-
-end
-
 --a temporary implementation , could have been done better with GOAP or HTN
 -- smelts 3 iron ore
 function smelt_iron()
